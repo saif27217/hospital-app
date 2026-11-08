@@ -5,8 +5,9 @@ Offline insurance-network hospital explorer for Hyderabad (Expo SDK 53, file-bas
 ## Data
 
 - 618 hospitals = 307 HDFC Ergo + 311 Care Supreme (`src/data/hospitals.json`).
-- 86 hospitals appear under **both** networks: evidence-mapped pairs (shared phone / unit-of-parent chain, audited 2026-11-08). Both sides of a pair carry the counterpart's name; 172 records are `insurance: "both"`-paired.
-- Pair provenance: `scripts/insurance_overlap.json` — `{"confirmed": [[hdfcName, careName], ×86], "chain": [×31]}`, names verbatim.
+- 86 hospitals appear under **both** networks: evidence-mapped pairs (shared phone / unit-of-parent chain / identical name / address; audited 2026-11-08 from source sheets, cross-checked by a Maps-address re-sweep that found no additional provable same-branch pairs — remaining "misses" are separate branches of chains plus records lacking addresses). Both sides of a pair carry the counterpart's name; 172 records are `insurance: "both"`-paired.
+- Pair provenance: `scripts/insurance_overlap.json` — `{"confirmed": [[hdfcName, careName], ×86], "chain": [×31 reviewed-but-unconfirmed]}` — names verbatim.
+- Street addresses (`full_address`) are populated for 215/618 records (merged from a Maps scrape; regenerated from the CLI repo cache).
 
 ## Screens
 
