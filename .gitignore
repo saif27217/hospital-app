@@ -42,3 +42,7 @@ example
 /ios
 /android
 dist-check/
+
+# runtime logs
+export.log
+server.log

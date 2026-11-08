@@ -1,56 +1,46 @@
-# Welcome to your Expo app 👋
+# hospital-app
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Offline insurance-network hospital explorer for Hyderabad (Expo SDK 53, file-based routing, zero runtime network calls).
 
-## Get started
+## Data
 
-1. Install dependencies
+- 618 hospitals = 307 HDFC Ergo + 311 Care Supreme (`src/data/hospitals.json`).
+- 86 hospitals appear under **both** networks: evidence-mapped pairs (shared phone / unit-of-parent chain, audited 2026-11-08). Both sides of a pair carry the counterpart's name; 172 records are `insurance: "both"`-paired.
+- Pair provenance: `scripts/insurance_overlap.json` — `{"confirmed": [[hdfcName, careName], ×86], "chain": [×31]}`, names verbatim.
 
-   ```bash
-   npm install
-   ```
+## Screens
 
-2. Start the app
+- **Home** — network counters, recommended chips.
+- **/search** — full list; insurance filter chip cycles `all (618) → hdfc (307) → care (311) → both (172)`; ⚑ marks dual-network rows; detail card prints `Also listed as: <counterpart>`.
+- **/contact** — phone/address cards.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run
 
 ```bash
-npm run reset-project
+npm install
+node_modules/.bin/expo start --port 8081   # no login; Ctrl-C to stop
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Ship checklist
 
-### Other setup steps
+```bash
+npm test                                   # node:test assertions
+node_modules/.bin/expo export --platform android --no-optimization
+node_modules/.bin/expo export --platform ios
+EXPO_TOKEN=<token> EAS_SKIP_AUTO_FINGERPRINT=1 npx eas-cli@latest update -p android -m "msg" --environment production --branch production --non-interactive
+# same for -p ios
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- `EXPO_TOKEN` (not `EAS_ACCESS_TOKEN`); CI token is publish-scoped — GraphQL read commands reject it.
+- `EAS_SKIP_AUTO_FINGERPRINT=1` required (Android fingerprint step crashes on `adaptiveIcon` in app.json).
+- `appVersion` must equal the OTA `--branch` label (currently `production`, version `1.2.0`).
 
-## Learn more
+## Versions
 
-To learn more about developing your project with Expo, look at the following resources:
+- **1.2.0** (2026-11-08): dual-network mapping, `both` chip, counterpart lines. EAS groups: android `f0bba6d9-62f7-4500-81e4-34d0807a9138`, ios `401f4f3a-d37e-450a-ac55-7c35b9cb8227`.
+- **1.1.0** (2026-11-07): enriched data, contacts screen. EAS groups: android `320823d9-5a77-4185-9806-8f72d9d1301c`, ios `2c16b41e-c660-4d31-9146-7d42a96c3778`.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Related
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- CLI/data repo: `saif27217/hospital-search-hdfc-care` (same 86-pair mapping, `dual` field).
+- Hermes skill: `hospital-search` (canonical `~/.hermes/skills/hospital-search/`, mirrored in `hermes-skills`).
