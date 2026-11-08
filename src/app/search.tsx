@@ -8,7 +8,7 @@ import { Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
-import { searchHospitals, browseHospitals, highlightSegments, fmtDistance, networkBadge, dualNetworks, dualNameCount, isHdfc, Hospital } from '@/utils/hospital-search';
+import { searchHospitals, browseHospitals, highlightSegments, fmtDistance, networkBadge, dualNetworks, dualPartnerName, dualPairCount, isHdfc, Hospital } from '@/utils/hospital-search';
 import { HOSPITALS } from '@/utils/hospital-search';
 
 function rowSegments(h: Hospital, q: string) {
@@ -38,6 +38,7 @@ function badgeLine(h: Hospital): string {
 function detailLines(h: Hospital) {
   const rows: { label: string; value: string }[] = [
     { label: 'Network', value: dualNetworks(h) ? 'HDFC Ergo + Care Supreme (both)' : h.insurance },
+    ...(dualPartnerName(h) ? [{ label: 'Also listed as', value: dualPartnerName(h)! }] : []),
     { label: 'Area', value: h.area },
     { label: 'Specialty', value: h.specialty },
     { label: 'Rating', value: h.google_rating !== undefined && h.google_rating !== null
@@ -135,7 +136,7 @@ export default function SearchScreen() {
           {query || area ? (
             `${matches.length} match${matches.length === 1 ? '' : 'es'}${dualShown ? ` · ⚑ ${dualShown} on both networks` : ''} · scroll for more`
           ) : (
-            `Full list · ${matches.length} hospitals · ${dualNameCount()} appear under both networks (⚑)`
+            `Full list · ${matches.length} hospitals · ${dualPairCount()} mapped HDFC↔Care pairs (⚑)`
           )}
         </Text>
 

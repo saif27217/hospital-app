@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { HOSPITALS, dualNameCount } from '@/utils/hospital-search';
+import { HOSPITALS, dualPairCount } from '@/utils/hospital-search';
 
 export default function HomeScreen() {
   const total = HOSPITALS.length;
@@ -53,7 +53,7 @@ export default function HomeScreen() {
             {`\u{1F3C6} = network-recommended (${recommended}) · ${withPhone} entries carry phone numbers`}
           </Text>
           <Text style={styles.legendLine}>
-            {`\u2691 = insured under BOTH networks — ${dualNameCount()} hospitals appear in HDFC Ergo and Care Supreme; the Hospitals tab shows the full list`}
+            {`\u2691 = insured under BOTH networks — ${dualPairCount()} hospital pairs mapped across HDFC Ergo \u2194 Care Supreme (tap one to see its counterpart); the Hospitals tab shows the full list`}
           </Text>
         </View>
 

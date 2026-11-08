@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { searchHospitals, browseHospitals, sortResults, topContacts, fmtDistance, networkBadge, dualNetworks, dualNameCount, isHdfc, HOSPITALS } from './hospital-search.ts';
+import { searchHospitals, browseHospitals, sortResults, topContacts, fmtDistance, networkBadge, dualNetworks, dualPartnerName, dualPairCount, isHdfc, HOSPITALS } from './hospital-search.ts';
 
 test.describe('hospital-search');
 
@@ -98,13 +98,12 @@ test('networkBadge maps insurance', () => {
   assert.equal(networkBadge(HOSPITALS.find((h) => !isHdfc(h) && !dualNetworks(h))!), 'CARE');
 });
 
-test('dualNetworks flags hospitals under both networks', () => {
+test('dualNetworks flags evidence-mapped hospitals under both networks', () => {
   const dual = HOSPITALS.filter(dualNetworks);
-  assert.ok(dual.length > 0);
-  assert.ok(dual.length === HOSPITALS.filter((h) =>
-    HOSPITALS.some((o) => o !== h && o.hospital_name.toLowerCase() === h.hospital_name.toLowerCase() && o.insurance !== h.insurance)
-  ).length);
-  assert.ok(dual.every(dualNetworks));
+  assert.ok(dual.length >= 172);
+  assert.ok(dual.every((h) => !!dualPartnerName(h)));
+  // every dual record's counterpart name exists on the opposite network
+  assert.ok(dual.every((h) => HOSPITALS.some((o) => o.insurance !== h.insurance && o.hospital_name === dualPartnerName(h)!)));
 });
 
 test('networkBadge shows HDFC+CARE for dual hospitals', () => {
@@ -112,10 +111,9 @@ test('networkBadge shows HDFC+CARE for dual hospitals', () => {
   assert.equal(networkBadge(dual), 'HDFC+CARE');
 });
 
-test('dualNameCount counts distinct dual names', () => {
-  const names = new Set(HOSPITALS.filter(dualNetworks).map((h) => h.hospital_name.toLowerCase()));
-  assert.equal(dualNameCount(), names.size);
-  assert.ok(names.size >= 5);
+test('dualPairCount counts mapped pairs once', () => {
+  const dual = HOSPITALS.filter(dualNetworks);
+  assert.equal(dualPairCount(), dual.length / 2);
 });
 
 test('browseHospitals returns the whole catalogue', () => {
@@ -128,9 +126,7 @@ test('browseHospitals both filter returns only dual entries', () => {
   const r = browseHospitals({ insurance: 'both' });
   assert.ok(r.length > 0);
   assert.ok(r.every(dualNetworks));
-  const names = new Set(r.map((h) => h.hospital_name.toLowerCase()));
   assert.equal(r.length, HOSPITALS.filter(dualNetworks).length);
-  assert.ok(names.size === dualNameCount());
 });
 
 test('browseHospitals area filter narrows results', () => {

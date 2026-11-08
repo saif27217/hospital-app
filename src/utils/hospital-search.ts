@@ -15,6 +15,7 @@ export interface Hospital {
   full_address?: string | null;
   is_recommended?: boolean;
   num_reviews?: string | null;
+  dual?: string | null;   // counterpart record name on the other insurance network
 }
 
 export const HOSPITALS: readonly Hospital[] = HOSPITALS_RAW;
@@ -23,27 +24,20 @@ export function isHdfc(h: Hospital): boolean {
   return h.insurance === 'HDFC Ergo';
 }
 
-// Hospitals whose name appears under BOTH insurance networks (HDFC Ergo + Care Supreme).
-const NETWORKS_BY_NAME: ReadonlyMap<string, ReadonlySet<string>> = (() => {
-  const map = new Map<string, Set<string>>();
-  for (const h of HOSPITALS) {
-    const key = h.hospital_name.toLowerCase();
-    const set = map.get(key) ?? new Set<string>();
-    set.add(h.insurance);
-    map.set(key, set);
-  }
-  return map;
-})();
-
+// `dual` pairs are mapped by evidence (name chain + phone + branch), not exact-name
+// coincidence: the counterpart record's hospital name lives on the other network.
 export function dualNetworks(h: Hospital): boolean {
-  const nets = NETWORKS_BY_NAME.get(h.hospital_name.toLowerCase());
-  return nets !== undefined && nets.size > 1;
+  return h.dual !== undefined && h.dual !== null && h.dual !== '';
 }
 
-export function dualNameCount(): number {
+export function dualPartnerName(h: Hospital): string | null {
+  return dualNetworks(h) ? String(h.dual) : null;
+}
+
+export function dualPairCount(): number {
   let n = 0;
-  for (const nets of NETWORKS_BY_NAME.values()) {
-    if (nets.size > 1) n += 1;
+  for (const h of HOSPITALS) {
+    if (dualNetworks(h) && h.insurance === 'HDFC Ergo') n += 1;
   }
   return n;
 }
