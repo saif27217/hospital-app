@@ -1,18 +1,24 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+import { NativeTabs } from 'expo-router/native-tabs';
+import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
+export default function Layout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
+      <NativeTabs backgroundColor="#070D1A" indicatorColor="rgba(103,232,249,0.14)">
+        <NativeTabs.Trigger name="index">
+          <NativeTabs.Trigger.Label>{"\u{1F3B7} Home"}</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="search">
+          <NativeTabs.Trigger.Label>{"\u{1F507} Hospitals"}</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="contacts">
+          <NativeTabs.Trigger.Label>{"\u{1F4CE} Contacts"}</NativeTabs.Trigger.Label>
+        </NativeTabs.Trigger>
+      </NativeTabs>
+      <StatusBar style="auto" />
     </ThemeProvider>
   );
 }
