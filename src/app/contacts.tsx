@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 import { Text } from 'react-native';
 import { View } from 'react-native';
 import { ScrollView } from 'react-native';
+import { Pressable } from 'react-native';
+import { Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { topContacts, networkBadge, fmtDistance, Hospital } from '@/utils/hospital-search';
@@ -23,6 +25,24 @@ function contactCard(h: Hospital): readonly { label: string; value: string }[] {
   ];
 }
 
+function phoneDigits(h: Hospital): string | null {
+  for (const c of h.contact_number ?? []) {
+    const d = c.replace(/\D/g, '');
+    if (d.length >= 7) return d;
+  }
+  return null;
+}
+function callHospital(h: Hospital) {
+  const d = phoneDigits(h);
+  if (d) Linking.openURL(`tel:${d}`);
+}
+function mapUrl(h: Hospital) {
+  return `https://maps.google.com/?q=${encodeURIComponent(`${h.hospital_name}, ${h.area}, Hyderabad`)}`;
+}
+function openMap(h: Hospital) {
+  Linking.openURL(mapUrl(h));
+}
+
 export default function ContactsScreen() {
   return (
     <LinearGradient style={styles.fill} colors={['#070D1A', '#10384C', '#070D1A']}>
@@ -39,6 +59,24 @@ export default function ContactsScreen() {
                   <Text style={styles.value}>{row.value}</Text>
                 </Text>
               ))}
+              <View style={styles.actions}>
+                {phoneDigits(h) ? (
+                  <Pressable
+                    style={styles.actionBtn}
+                    onPress={() => callHospital(h)}
+                    accessibilityLabel={`Call ${h.hospital_name}`}
+                  >
+                    <Text style={styles.actionText}>{'\u{1F4DE} Call'}</Text>
+                  </Pressable>
+                ) : null}
+                <Pressable
+                  style={styles.actionBtn}
+                  onPress={() => openMap(h)}
+                  accessibilityLabel={`Open ${h.hospital_name} on Google Maps`}
+                >
+                  <Text style={styles.actionText}>{'\u{1F4CD} Directions'}</Text>
+                </Pressable>
+              </View>
             </View>
           ))}
           <Text style={styles.section}>Care Supreme — best-rated</Text>
@@ -51,6 +89,24 @@ export default function ContactsScreen() {
                   <Text style={styles.value}>{row.value}</Text>
                 </Text>
               ))}
+              <View style={styles.actions}>
+                {phoneDigits(h) ? (
+                  <Pressable
+                    style={styles.actionBtn}
+                    onPress={() => callHospital(h)}
+                    accessibilityLabel={`Call ${h.hospital_name}`}
+                  >
+                    <Text style={styles.actionText}>{'\u{1F4DE} Call'}</Text>
+                  </Pressable>
+                ) : null}
+                <Pressable
+                  style={styles.actionBtn}
+                  onPress={() => openMap(h)}
+                  accessibilityLabel={`Open ${h.hospital_name} on Google Maps`}
+                >
+                  <Text style={styles.actionText}>{'\u{1F4CD} Directions'}</Text>
+                </Pressable>
+              </View>
             </View>
           ))}
         </ScrollView>
@@ -80,6 +136,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   cardName: { fontSize: 16, fontWeight: '700', color: '#E8F4FF' },
+  actions: { flexDirection: 'row', gap: 10, marginTop: 6 },
+  actionBtn: {
+    flex: 1,
+    padding: 9,
+    borderRadius: 12,
+    backgroundColor: 'rgba(103,232,249,0.12)',
+    borderColor: 'rgba(103,232,249,0.5)',
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  actionText: { fontSize: 13, fontWeight: '700', color: '#67E8F9' },
   line: { fontSize: 12, color: '#9FB8D4' },
   label: { fontSize: 11, fontWeight: '800', color: '#67E8F9' },
   value: { fontSize: 12, color: '#B9CFE8' },

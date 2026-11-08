@@ -12,8 +12,8 @@ Offline insurance-network hospital explorer for Hyderabad (Expo SDK 53, file-bas
 ## Screens
 
 - **Home** — network counters, recommended chips.
-- **/search** — full list; insurance filter chip cycles `all (618) → hdfc (307) → care (311) → both (172)`; ⚑ marks dual-network rows; detail card prints `Also listed as: <counterpart>`.
-- **/contact** — phone/address cards.
+- **/search** — full list; insurance filter chip cycles `all (618) → hdfc (307) → care (311) → both (172)`; ⚑ marks dual-network rows; detail card prints `Also listed as: <counterpart>` and has **Call** (`tel:`) + **Directions** (Google Maps deep link) buttons.
+- **/contact** — phone/address cards with the same Call + Directions buttons.
 
 ## Run
 

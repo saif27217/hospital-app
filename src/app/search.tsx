@@ -5,6 +5,7 @@ import { Text } from 'react-native';
 import { TextInput } from 'react-native';
 import { View } from 'react-native';
 import { Pressable } from 'react-native';
+import { Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 
@@ -21,6 +22,24 @@ function rowSegments(h: Hospital, q: string) {
       {seg.part}
     </Text>
   ));
+}
+
+function phoneDigits(h: Hospital): string | null {
+  for (const c of h.contact_number ?? []) {
+    const d = c.replace(/\D/g, '');
+    if (d.length >= 7) return d;
+  }
+  return null;
+}
+function callHospital(h: Hospital) {
+  const d = phoneDigits(h);
+  if (d) Linking.openURL(`tel:${d}`);
+}
+function mapUrl(h: Hospital) {
+  return `https://maps.google.com/?q=${encodeURIComponent(`${h.hospital_name}, ${h.area}, Hyderabad`)}`;
+}
+function openMap(h: Hospital) {
+  Linking.openURL(mapUrl(h));
 }
 
 function badgeLine(h: Hospital): string {
@@ -164,6 +183,24 @@ export default function SearchScreen() {
                       <Text style={styles.detailValue}>{row.value}</Text>
                     </Text>
                   ))}
+                  <View style={styles.detailActions}>
+                    {phoneDigits(h) ? (
+                      <Pressable
+                        style={styles.actionBtn}
+                        onPress={() => callHospital(h)}
+                        accessibilityLabel={`Call ${h.hospital_name}`}
+                      >
+                        <Text style={styles.actionText}>{'\u{1F4DE} Call'}</Text>
+                      </Pressable>
+                    ) : null}
+                    <Pressable
+                      style={styles.actionBtn}
+                      onPress={() => openMap(h)}
+                      accessibilityLabel={`Open ${h.hospital_name} on Google Maps`}
+                    >
+                      <Text style={styles.actionText}>{'\u{1F4CD} Directions'}</Text>
+                    </Pressable>
+                  </View>
                 </View>
               ) : null}
             </View>
@@ -223,6 +260,17 @@ const styles = StyleSheet.create({
   detailLine: { fontSize: 12, color: '#9FB8D4' },
   detailLabel: { fontSize: 11, fontWeight: '800', color: '#67E8F9' },
   detailValue: { fontSize: 12, color: '#B9CFE8' },
+  detailActions: { flexDirection: 'row', gap: 10, marginTop: 8 },
+  actionBtn: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 12,
+    backgroundColor: 'rgba(103,232,249,0.12)',
+    borderColor: 'rgba(103,232,249,0.5)',
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  actionText: { fontSize: 13, fontWeight: '700', color: '#67E8F9' },
   footer: { padding: 10, borderRadius: 12 },
   footerText: { fontSize: 12, color: '#5F7A92' },
 });
